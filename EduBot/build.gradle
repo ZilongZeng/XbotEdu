@@ -102,7 +102,7 @@ checkstyle {
 
 task checkstyle(type: Checkstyle) {
     source 'src/main/java'
-    configProperties.basedir = file('.')
+    configProperties.basedir = file('../SeriouslyCommonLib')
     
     // Empty classpath
     classpath = files()
