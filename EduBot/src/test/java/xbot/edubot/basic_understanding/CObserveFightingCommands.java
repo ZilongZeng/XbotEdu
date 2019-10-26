@@ -15,8 +15,9 @@ public class CObserveFightingCommands extends BaseWPITest{
         log = Logger.getLogger(CObserveFightingCommands.class);
         
         CommandA cmda = injector.getInstance(CommandA.class);
+        cmda.setRunWhenDisabled(true);
         CommandB cmdb = injector.getInstance(CommandB.class);
-        
+        cmdb.setRunWhenDisabled(true);
         // CommandA starts. 
         cmda.start();
         

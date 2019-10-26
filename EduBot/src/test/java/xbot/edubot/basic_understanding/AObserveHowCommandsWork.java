@@ -17,6 +17,7 @@ public class AObserveHowCommandsWork extends BaseWPITest{
         
         // This is a simple command that just prints out what methods are called on it.
         ExampleCommand cmd = injector.getInstance(ExampleCommand.class);
+        cmd.setRunWhenDisabled(true);
         
         // There's many ways to start commands. Often, they are started by pressing a joystick
         // button, but for testing we can just force it to start.
