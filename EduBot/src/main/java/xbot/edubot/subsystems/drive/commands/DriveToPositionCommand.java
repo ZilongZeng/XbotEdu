@@ -4,26 +4,29 @@ import com.google.inject.Inject;
 
 import xbot.common.command.BaseCommand;
 import xbot.edubot.subsystems.drive.DriveSubsystem;
+import xbot.common.math.PIDFactory;
+import xbot.common.math.PIDManager;
 
 public class DriveToPositionCommand extends BaseCommand {
 
     DriveSubsystem drive;
     public double target_Position;
-    double power;
-    double distance_away;
-    double Cdistance;
-    double last_point;
-    double speed;
+    PIDManager pid;
+
 
     @Inject
-    public DriveToPositionCommand(DriveSubsystem driveSubsystem) {
+    public DriveToPositionCommand(DriveSubsystem driveSubsystem, PIDFactory pf){
         this.drive = driveSubsystem;
-        this.power = 1;
-        this.distance_away = 0;
-        this.speed = 0;
-        this.Cdistance = 0;
-        this.last_point = 0;
+        this.pid = pf.createPIDManager("DriveToPoint");
+        
+        pid.setEnableErrorThreshold(true); // Turn on distance checking
+        pid.setErrorThreshold(0.1);
+        pid.setEnableDerivativeThreshold(true); // Turn on speed checking
+        pid.setDerivativeThreshold(0.1);
 
+        // manually adjust these values to adjust the action
+        pid.setP(0.5);
+        pid.setD(2);
     }
     
     public void setTargetPosition(double position) {
@@ -35,33 +38,19 @@ public class DriveToPositionCommand extends BaseCommand {
     @Override
     public void initialize() {
         // If you have some one-time setup, do it here.
+        pid.reset();
     }
 
     @Override
     public void execute() {
-        // Here you'll need to figure out a technique that:
-        // - Gets the robot to move to the target position 
-        // - Hint: use drive.distanceSensor.get() to find out where you are
-        // - Gets the robot stop (or at least be moving really really slowly) at the target position
-        // How you do this is up to you. If you get stuck, ask a mentor or student for some hints!
-        
-        Cdistance = drive.distanceSensor.getDistance();
-        distance_away = target_Position - drive.distanceSensor.getDistance();
-        power = distance_away / target_Position;
-        speed = (power * 4.2) - ((Cdistance - last_point) * 4.2); 
-        drive.tankDrive(speed, speed);
-        last_point = Cdistance;
+        double currentPosition = drive.distanceSensor.getDistance();
+        double power = pid.calculate(target_Position, currentPosition);
+        drive.tankDrive(power, power);
     }
     
     @Override
     public boolean isFinished() {
-        // Modify this to return true once you have met your goal, 
-        // and you're moving fairly slowly (ideally stopped)
-
-        if (Math.abs(drive.distanceSensor.getDistance() - target_Position) < 0.2){
-            return true;
-        }
-        return false;
+        return pid.isOnTarget();
     }
 
 }
