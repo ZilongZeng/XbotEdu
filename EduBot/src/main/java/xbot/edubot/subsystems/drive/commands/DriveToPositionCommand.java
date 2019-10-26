@@ -25,8 +25,8 @@ public class DriveToPositionCommand extends BaseCommand {
         pid.setDerivativeThreshold(0.1);
 
         // manually adjust these values to adjust the action
-        pid.setP(0.5);
-        pid.setD(2);
+        pid.setP(1);
+        pid.setD(4.2);
     }
     
     public void setTargetPosition(double position) {
