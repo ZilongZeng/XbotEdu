@@ -11,9 +11,11 @@ public class GoToOrientationTest extends BaseOrientationEngineTest implements Se
     @Test
     public void testGoToOrientation() {
         DriveToOrientationCommand command = injector.getInstance(DriveToOrientationCommand.class);
-        command.setTargetHeading(150);
+        double start = 0;
+        double finish = -180;
+        command.setTargetHeading(finish);
 
-        setUpTestEnvironment(command, 0, 150);
+        setUpTestEnvironment(command, start, finish);
         runTestEnv();
     }
 
